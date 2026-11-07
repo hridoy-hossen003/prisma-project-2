@@ -23,6 +23,40 @@ res.status(httpStatus.CREATED).json({
     }
     }
 
+    const loginUser = async  (req : Request , res : Response) =>{
+        try {
+            const userData = req.body
+            const {accessToken , refreshToken } = await userService.loginUserDB(userData)
+            res.cookie("accessToken" , accessToken , {
+                httpOnly  : true,
+                sameSite : "none" ,
+                secure : false ,
+                maxAge : 1000*60*60*24
+            })
+
+             res.cookie("refreshToken" , refreshToken , {
+                httpOnly  : true,
+                sameSite : "none" ,
+                secure : false ,
+                maxAge : 1000*60*60*24*7
+            })
+
+            return res.status(httpStatus.OK).json({
+                success : true,
+                statusCode : httpStatus.OK,
+                message : "User logged in successfully" ,
+                data : {
+                    accessToken,
+                    refreshToken
+                }
+            })
+
+        } catch (error) {
+            
+        }
+    }
+
 export const userConroller = {
-    createUser
+    createUser,
+    loginUser
 }
